@@ -46,8 +46,7 @@ class TaskServiceTest extends AbstractContainerBase {
     @Order(1)
     @DisplayName("Create Task and Schedule a Job")
     void givenTaskObject_whenSave_thenReturnSavedTask() {
-        Mono<Task> taskMono = Mono.just(task);
-        Mono<Task> taskMonoResult = this.taskService.create(taskMono);
+        Mono<Task> taskMonoResult = this.taskService.create(task);
         StepVerifier.create(taskMonoResult)
                 .assertNext(savedTask -> {
                     Assertions.assertThat(savedTask.getId()).isPositive();
@@ -108,8 +107,7 @@ class TaskServiceTest extends AbstractContainerBase {
         task.setMinute(30);
         task.setExecutionDays("TUE,THU,SAT");
         task.setDeviceAction("DEACTIVATE");
-        Mono<Task> updatedTaskMono = Mono.just(task);
-        Mono<Task> taskMonoResult = this.taskService.update(task.getId(), updatedTaskMono);
+        Mono<Task> taskMonoResult = this.taskService.update(task.getId(), task);
         StepVerifier.create(taskMonoResult)
                 .assertNext(updatedTask -> {
                     Assertions.assertThat(updatedTask.getId()).isEqualTo(task.getId());
@@ -133,8 +131,7 @@ class TaskServiceTest extends AbstractContainerBase {
         task.setMinute(30);
         task.setExecutionDays("TUE,THU,SAT");
         task.setDeviceAction("DEACTIVATE");
-        Mono<Task> updatedTaskMono = Mono.just(task);
-        Mono<Task> taskMonoResult = this.taskService.update(100L, updatedTaskMono);
+        Mono<Task> taskMonoResult = this.taskService.update(100L, task);
         StepVerifier.create(taskMonoResult)
                 .expectError(ResourceNotFoundException.class)
                 .verify();

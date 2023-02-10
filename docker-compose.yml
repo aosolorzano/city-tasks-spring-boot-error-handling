@@ -21,8 +21,8 @@ services:
     image: dpage/pgadmin4
     container_name: tasks-pgadmin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@aosolorzano.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
     volumes:
       - ./utils/docker-volume/pgadmin:/var/lib/pgadmin
     ports:
@@ -59,7 +59,7 @@ services:
     container_name: city-tasks-spring-native
     build:
       context: .
-      dockerfile: Dockerfile-native
+      dockerfile: Dockerfile
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - HIPERIUM_CITY_TASKS_TIME_ZONE_ID=-05:00

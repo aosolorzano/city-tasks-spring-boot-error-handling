@@ -1,13 +1,11 @@
 package com.hiperium.city.tasks.api.utils;
 
-import com.hiperium.city.tasks.api.exception.TaskException;
 import com.hiperium.city.tasks.api.model.Task;
-import com.hiperium.city.tasks.api.utils.enums.TaskErrorEnum;
+import org.springframework.beans.BeanUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
 import java.util.UUID;
 
 public final class TasksUtil {
@@ -32,13 +30,6 @@ public final class TasksUtil {
         return uuid.substring(0, JOB_ID_LENGTH);
     }
 
-    public static Task validateTaskId(Task newTask) {
-        if (Objects.nonNull(newTask.getId())) {
-            throw new TaskException(TaskErrorEnum.TASK_ALREADY_EXIST, newTask.getId());
-        }
-        return newTask;
-    }
-
     private static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -48,5 +39,4 @@ public final class TasksUtil {
         }
         return new String(hexChars);
     }
-
 }

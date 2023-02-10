@@ -3,7 +3,8 @@ package com.hiperium.city.tasks.api.utils.enums;
 public enum ResourceErrorEnum {
 
     TASK_NOT_FOUND("RSC-001", "Task not found with ID: %s."),
-    DEVICE_NOT_FOUND("RSC-002", "Device not found with ID: %s.");
+    DEVICE_NOT_FOUND("RSC-002", "Device not found with ID: %s."),
+    TRIGGER_NOT_FOUND("RSC-003", "Job Trigger not found for Task ID: %s.");
 
     private final String code;
     private final String message;

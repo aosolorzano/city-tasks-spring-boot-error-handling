@@ -7,8 +7,7 @@ COPY .mvn     /workspace/app/.mvn
 COPY pom.xml  /workspace/app/pom.xml
 
 WORKDIR /workspace/app
-RUN gu install native-image && \
-    ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
+RUN ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
 
 COPY src /workspace/app/src
 RUN ./mvnw clean -Pnative native:compile -DskipTests
