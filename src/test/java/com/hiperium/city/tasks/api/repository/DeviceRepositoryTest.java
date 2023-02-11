@@ -5,6 +5,7 @@ import com.hiperium.city.tasks.api.exception.ResourceNotFoundException;
 import com.hiperium.city.tasks.api.model.Device;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.DevicesUtil;
+import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +130,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
     @DisplayName("Turn Device OFF")
     void givenDeviceItem_whenTaskTurnedOff_mustUpdateDeviceStatus() {
         Task task = getMockedTask();
-        task.setDeviceAction("DEACTIVATE");
+        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
         Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTask(task);
         StepVerifier.create(deviceUpdateResponse)
                 .expectNext(true)
@@ -152,7 +153,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
     @DisplayName("Turn Device ON")
     void givenDeviceItem_whenTaskTurnedOn_mustUpdateDeviceStatus() {
         Task task = getMockedTask();
-        task.setDeviceAction("ACTIVATE");
+        task.setDeviceAction(DeviceActionEnum.ACTIVATE);
         Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTask(task);
         StepVerifier.create(deviceUpdateResponse)
                 .expectNext(true)
@@ -196,7 +197,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
                 .name("Task 1")
                 .description("Task 1 Description")
                 .deviceId(DEVICE_ID)
-                .deviceAction("ACTIVATE")
+                .deviceAction(DeviceActionEnum.ACTIVATE)
                 .build();
     }
 }

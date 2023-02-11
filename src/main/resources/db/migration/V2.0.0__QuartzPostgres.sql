@@ -12,26 +12,6 @@ DROP TABLE IF EXISTS QRTZ_BLOB_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_JOB_DETAILS;
 DROP TABLE IF EXISTS QRTZ_CALENDARS;
-DROP TABLE IF EXISTS HIP_CTY_TASKS;
-DROP SEQUENCE IF EXISTS HIP_CTY_TASKS_SEQ;
-
-CREATE SEQUENCE HIP_CTY_TASKS_SEQ start 1 increment 1;
-
-CREATE TABLE HIP_CTY_TASKS
-(
-    id int8 NOT NULL,
-    name varchar(30) NOT NULL,
-    description varchar(255) NULL,
-    job_id varchar(30) NOT NULL,
-    task_hour int4 NOT NULL,
-    task_minute int4 NOT NULL,
-    execution_days varchar(30) NOT NULL,
-    execution_command varchar(255) NOT NULL,
-    execute_until TIMESTAMP NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
-    PRIMARY KEY (id)
-);
 
 CREATE TABLE QRTZ_JOB_DETAILS
 (

@@ -1,9 +1,13 @@
 package com.hiperium.city.tasks.api.controller;
 
 import com.hiperium.city.tasks.api.common.AbstractContainerBase;
+import com.hiperium.city.tasks.api.dto.ErrorDetailsDTO;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
+import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.GenericErrorEnum;
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -22,8 +28,6 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TaskControllerTest extends AbstractContainerBase {
 
-    private static final String DEVICE_ID = "1";
-
     @Autowired
     private WebTestClient webTestClient;
 
@@ -31,16 +35,7 @@ class TaskControllerTest extends AbstractContainerBase {
 
     @BeforeAll
     public static void init() {
-        task = Task.builder()
-                .name("Test class")
-                .description("Task description.")
-                .hour(12)
-                .minute(0)
-                .executionDays("MON,WED,SUN")
-                .executionCommand("java -jar test.jar")
-                .deviceId(DEVICE_ID)
-                .deviceAction("ACTIVATE")
-                .build();
+        task = TasksUtil.getTaskTemplateObject();
     }
 
     @Test
@@ -62,7 +57,7 @@ class TaskControllerTest extends AbstractContainerBase {
                     Assertions.assertThat(savedTask.getHour()).isEqualTo(task.getHour());
                     Assertions.assertThat(savedTask.getMinute()).isEqualTo(task.getMinute());
                     Assertions.assertThat(savedTask.getExecutionDays()).isEqualTo(task.getExecutionDays());
-                    Assertions.assertThat(savedTask.getExecutionCommand()).isEqualTo(task.getExecutionCommand());
+                    Assertions.assertThat(savedTask.getDeviceExecutionCommand()).isEqualTo(task.getDeviceExecutionCommand());
                     Assertions.assertThat(savedTask.getDeviceId()).isEqualTo(task.getDeviceId());
                     Assertions.assertThat(savedTask.getDeviceAction()).isEqualTo(task.getDeviceAction());
                     BeanUtils.copyProperties(savedTask, task);
@@ -84,11 +79,12 @@ class TaskControllerTest extends AbstractContainerBase {
                     Assertions.assertThat(foundTask.getId()).isEqualTo(task.getId());
                     Assertions.assertThat(foundTask.getName()).isEqualTo(task.getName());
                     Assertions.assertThat(foundTask.getDescription()).isEqualTo(task.getDescription());
+                    Assertions.assertThat(foundTask.getEnabled()).isEqualTo(task.getEnabled());
                     Assertions.assertThat(foundTask.getJobId()).isEqualTo(task.getJobId());
                     Assertions.assertThat(foundTask.getHour()).isEqualTo(task.getHour());
                     Assertions.assertThat(foundTask.getMinute()).isEqualTo(task.getMinute());
                     Assertions.assertThat(foundTask.getExecutionDays()).isEqualTo(task.getExecutionDays());
-                    Assertions.assertThat(foundTask.getExecutionCommand()).isEqualTo(task.getExecutionCommand());
+                    Assertions.assertThat(foundTask.getDeviceExecutionCommand()).isEqualTo(task.getDeviceExecutionCommand());
                     Assertions.assertThat(foundTask.getDeviceId()).isEqualTo(task.getDeviceId());
                     Assertions.assertThat(foundTask.getDeviceAction()).isEqualTo(task.getDeviceAction());
                 });
@@ -133,7 +129,7 @@ class TaskControllerTest extends AbstractContainerBase {
         task.setHour(13);
         task.setMinute(30);
         task.setExecutionDays("MON,TUE,WED,THU,FRI,SAT,SUN");
-        task.setDeviceAction("DEACTIVATE");
+        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
 
         this.webTestClient
                 .put()
@@ -189,4 +185,59 @@ class TaskControllerTest extends AbstractContainerBase {
                 .expectStatus().isNotFound();
     }
 
+    /**
+     * *************************************************************
+     * **************** TESTS FOR VALIDATION ERRORS ****************
+     * *************************************************************
+     */
+    @Test
+    @Order(9)
+    @DisplayName("Create Task without name")
+    void givenTaskWithoutName_whenCreate_thenReturnError404() {
+        Task task = TasksUtil.getTaskTemplateObject();
+        task.setName(null);
+        this.getValidationErrorRequest(task)
+                .value(errorDetailsDTO -> {
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("The name must not be empty.");
+                });
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Create Task with wrong hour")
+    void givenTaskWithWrongHour_whenCreate_thenReturnError404() {
+        Task task = TasksUtil.getTaskTemplateObject();
+        task.setHour(25);
+        this.getValidationErrorRequest(task)
+                .value(errorDetailsDTO -> {
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("The hour must be less than or equal to 23.");
+                });
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Create Task with past execute until date")
+    void givenTaskWithPastExecuteUntil_whenCreate_thenReturnError404() {
+        Task task = TasksUtil.getTaskTemplateObject();
+        task.setExecuteUntil(ZonedDateTime.now().minusDays(1));
+        this.getValidationErrorRequest(task)
+                .value(errorDetailsDTO -> {
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("The execute until date must be in the future.");
+                });
+    }
+
+    @NotNull
+    private WebTestClient.BodySpec<ErrorDetailsDTO, ?> getValidationErrorRequest(Task task) {
+        return this.webTestClient
+                .post()
+                .uri(TasksUtil.TASKS_PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(task)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(ErrorDetailsDTO.class);
+    }
 }

@@ -3,6 +3,7 @@ package com.hiperium.city.tasks.api.service;
 import com.hiperium.city.tasks.api.common.AbstractContainerBase;
 import com.hiperium.city.tasks.api.exception.ResourceNotFoundException;
 import com.hiperium.city.tasks.api.model.Task;
+import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.BeanUtils;
@@ -12,6 +13,8 @@ import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -33,12 +36,14 @@ class TaskServiceTest extends AbstractContainerBase {
         task = Task.builder()
                 .name("Test class")
                 .description("Task description.")
+                .enabled(true)
                 .hour(12)
                 .minute(0)
                 .executionDays("MON,WED,SUN")
-                .executionCommand("java -jar test.jar")
+                .executeUntil(ZonedDateTime.now().plusMonths(1))
                 .deviceId(DEVICE_ID)
-                .deviceAction("ACTIVATE")
+                .deviceAction(DeviceActionEnum.ACTIVATE)
+                .deviceExecutionCommand("python /home/pi/hiperium/ultrasonic_avoidance.py")
                 .build();
     }
 
@@ -52,12 +57,13 @@ class TaskServiceTest extends AbstractContainerBase {
                     Assertions.assertThat(savedTask.getId()).isPositive();
                     Assertions.assertThat(savedTask.getName()).isEqualTo("Test class");
                     Assertions.assertThat(savedTask.getDescription()).isEqualTo("Task description.");
+                    Assertions.assertThat(savedTask.getEnabled()).isTrue();
                     Assertions.assertThat(savedTask.getHour()).isEqualTo(12);
                     Assertions.assertThat(savedTask.getMinute()).isZero();
                     Assertions.assertThat(savedTask.getExecutionDays()).isEqualTo("MON,WED,SUN");
-                    Assertions.assertThat(savedTask.getExecutionCommand()).isEqualTo("java -jar test.jar");
+                    Assertions.assertThat(savedTask.getDeviceExecutionCommand()).isEqualTo("python /home/pi/hiperium/ultrasonic_avoidance.py");
                     Assertions.assertThat(savedTask.getDeviceId()).isEqualTo(DEVICE_ID);
-                    Assertions.assertThat(savedTask.getDeviceAction()).isEqualTo("ACTIVATE");
+                    Assertions.assertThat(savedTask.getDeviceAction()).isEqualTo(DeviceActionEnum.ACTIVATE);
                     BeanUtils.copyProperties(savedTask, task);
                 })
                 .verifyComplete();
@@ -106,7 +112,7 @@ class TaskServiceTest extends AbstractContainerBase {
         task.setHour(13);
         task.setMinute(30);
         task.setExecutionDays("TUE,THU,SAT");
-        task.setDeviceAction("DEACTIVATE");
+        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
         Mono<Task> taskMonoResult = this.taskService.update(task.getId(), task);
         StepVerifier.create(taskMonoResult)
                 .assertNext(updatedTask -> {
@@ -116,7 +122,7 @@ class TaskServiceTest extends AbstractContainerBase {
                     Assertions.assertThat(updatedTask.getHour()).isEqualTo(13);
                     Assertions.assertThat(updatedTask.getMinute()).isEqualTo(30);
                     Assertions.assertThat(updatedTask.getExecutionDays()).isEqualTo("TUE,THU,SAT");
-                    Assertions.assertThat(updatedTask.getDeviceAction()).isEqualTo("DEACTIVATE");
+                    Assertions.assertThat(updatedTask.getDeviceAction()).isEqualTo(DeviceActionEnum.DEACTIVATE);
                 })
                 .verifyComplete();
     }
@@ -130,7 +136,7 @@ class TaskServiceTest extends AbstractContainerBase {
         task.setHour(13);
         task.setMinute(30);
         task.setExecutionDays("TUE,THU,SAT");
-        task.setDeviceAction("DEACTIVATE");
+        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
         Mono<Task> taskMonoResult = this.taskService.update(100L, task);
         StepVerifier.create(taskMonoResult)
                 .expectError(ResourceNotFoundException.class)

@@ -3,6 +3,7 @@ package com.hiperium.city.tasks.api.controller;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.service.TaskService;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,17 +25,15 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Task> create(@RequestBody Task newTask) {
+    public Mono<Task> create(@RequestBody @Valid Task newTask) {
         LOGGER.debug("create(): {}", newTask);
-        // TODO: Validate task
         return this.taskService.create(newTask);
     }
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<Task> update(@PathVariable("id") long taskId, @RequestBody Task updatedTask) {
+    public Mono<Task> update(@PathVariable("id") long taskId, @RequestBody @Valid Task updatedTask) {
         LOGGER.debug("update(): {}", updatedTask);
-        // TODO: Validate if the task exists
         return this.taskService.update(taskId, updatedTask);
     }
 
@@ -42,7 +41,6 @@ public class TaskController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> delete(@PathVariable("id") long taskId) {
         LOGGER.debug("delete(): {}", taskId);
-        // TODO: Validate if the task exists
         return this.taskService.delete(taskId);
     }
 
@@ -63,15 +61,6 @@ public class TaskController {
     @GetMapping("/template")
     @ResponseStatus(HttpStatus.OK)
     public Task getTaskTemplate() {
-        return Task.builder()
-                .name("Task name")
-                .description("Task description")
-                .hour(12)
-                .minute(0)
-                .executionDays("MON,WED,FRI")
-                .executionCommand("java -jar /home/pi/hiperium-city-1.0.0.jar")
-                .deviceId("1234567890")
-                .deviceAction("ACTIVATE")
-                .build();
+        return TasksUtil.getTaskTemplateObject();
     }
 }

@@ -1,16 +1,21 @@
 package com.hiperium.city.tasks.api.utils;
 
 import com.hiperium.city.tasks.api.model.Task;
-import org.springframework.beans.BeanUtils;
+import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 public final class TasksUtil {
 
     public static final String TASKS_PATH = "/api/tasks";
+    private static final List<String> DAYS_LIST = Arrays.asList("SUN","MON","TUE","WED","THU","FRI","SAT");
     private static final char[] HEX_ARRAY = "HiperiumTasksService".toCharArray();
     private static final int JOB_ID_LENGTH = 20;
 
@@ -38,5 +43,20 @@ public final class TasksUtil {
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    public static Task getTaskTemplateObject() {
+        return Task.builder()
+                .name("Task name")
+                .description("Task description")
+                .enabled(true)
+                .deviceId("123")
+                .deviceAction(DeviceActionEnum.ACTIVATE)
+                .deviceExecutionCommand("python /home/pi/hiperium/line_follower.py")
+                .hour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+                .minute(Calendar.getInstance().get(Calendar.MINUTE))
+                .executionDays(DAYS_LIST.get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1))
+                .executeUntil(ZonedDateTime.now().plusYears(1))
+                .build();
     }
 }
