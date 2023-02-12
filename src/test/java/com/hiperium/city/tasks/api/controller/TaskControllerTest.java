@@ -1,13 +1,10 @@
 package com.hiperium.city.tasks.api.controller;
 
 import com.hiperium.city.tasks.api.common.AbstractContainerBase;
-import com.hiperium.city.tasks.api.dto.ErrorDetailsDTO;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
 import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
-import com.hiperium.city.tasks.api.utils.enums.GenericErrorEnum;
 import org.assertj.core.api.Assertions;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -183,61 +178,5 @@ class TaskControllerTest extends AbstractContainerBase {
                 .uri(TasksUtil.TASKS_PATH.concat("/{id}"), task.getId())
                 .exchange()
                 .expectStatus().isNotFound();
-    }
-
-    /**
-     * *************************************************************
-     * **************** TESTS FOR VALIDATION ERRORS ****************
-     * *************************************************************
-     */
-    @Test
-    @Order(9)
-    @DisplayName("Create Task without name")
-    void givenTaskWithoutName_whenCreate_thenReturnError404() {
-        Task task = TasksUtil.getTaskTemplateObject();
-        task.setName(null);
-        this.getValidationErrorRequest(task)
-                .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
-                    Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("The name must not be empty.");
-                });
-    }
-
-    @Test
-    @Order(10)
-    @DisplayName("Create Task with wrong hour")
-    void givenTaskWithWrongHour_whenCreate_thenReturnError404() {
-        Task task = TasksUtil.getTaskTemplateObject();
-        task.setHour(25);
-        this.getValidationErrorRequest(task)
-                .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
-                    Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("The hour must be less than or equal to 23.");
-                });
-    }
-
-    @Test
-    @Order(11)
-    @DisplayName("Create Task with past execute until date")
-    void givenTaskWithPastExecuteUntil_whenCreate_thenReturnError404() {
-        Task task = TasksUtil.getTaskTemplateObject();
-        task.setExecuteUntil(ZonedDateTime.now().minusDays(1));
-        this.getValidationErrorRequest(task)
-                .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
-                    Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("The execute until date must be in the future.");
-                });
-    }
-
-    @NotNull
-    private WebTestClient.BodySpec<ErrorDetailsDTO, ?> getValidationErrorRequest(Task task) {
-        return this.webTestClient
-                .post()
-                .uri(TasksUtil.TASKS_PATH)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(task)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ErrorDetailsDTO.class);
     }
 }

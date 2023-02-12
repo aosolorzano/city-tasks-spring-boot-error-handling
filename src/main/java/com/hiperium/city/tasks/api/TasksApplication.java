@@ -11,7 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+
+import java.nio.charset.StandardCharsets;
 
 @SpringBootApplication
 @ImportRuntimeHints({PostgresRuntimeHints.class, QuartzRuntimeHints.class})
@@ -25,5 +30,13 @@ public class TasksApplication {
         PropertiesLoader.load();
         SpringApplication.run(TasksApplication.class, args);
         LOGGER.info("main() - END");
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding(StandardCharsets.ISO_8859_1.name());
+        return messageSource;
     }
 }

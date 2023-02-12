@@ -2,6 +2,7 @@ package com.hiperium.city.tasks.api.utils;
 
 import com.hiperium.city.tasks.api.model.Device;
 import com.hiperium.city.tasks.api.model.Task;
+import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -29,7 +30,7 @@ public final class DevicesUtil {
     }
 
     public static Device changeDeviceStatus(Device device, Task task) {
-        if ("ACTIVATE".equals(task.getDeviceAction())) {
+        if (DeviceActionEnum.ACTIVATE.equals(task.getDeviceAction())) {
             device.setStatus("ON");
         } else {
             device.setStatus("OFF");

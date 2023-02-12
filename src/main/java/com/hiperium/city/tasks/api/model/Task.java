@@ -23,47 +23,47 @@ public class Task {
     @SequenceGenerator(name = "HIP_CTY_TASKS_SEQ", sequenceName = "HIP_CTY_TASKS_SEQ", allocationSize = 1)
     private Long id;
 
-    @NotEmpty(message = "The name must not be empty.")
+    @NotEmpty(message = "validation.task.name.NotEmpty.message")
     @Column(name = "name", length = 60, nullable = false)
     private String name;
 
     @Column(name = "description")
     private String description;
 
-    @NotNull(message = "The enabled flag must not be null.")
+    @NotNull(message = "validation.task.enabled.NotEmpty.message")
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
 
     @Column(name = "job_id", length = 30, nullable = false)
     private String jobId;
 
-    @NotEmpty(message = "The device ID must not be empty.")
+    @NotEmpty(message = "validation.device.id.NotEmpty.message")
     @Column(name = "device_id", length = 30, nullable = false)
     private String deviceId;
 
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "The device action must not be null.")
+    @NotNull(message = "validation.device.action.NotEmpty.message")
     @Column(name = "device_action", length = 10, nullable = false)
     private DeviceActionEnum deviceAction;
 
     @Column(name = "device_execution_command", length = 90)
     private String deviceExecutionCommand;
 
-    @Min(value = 0, message = "The hour must be greater than or equal to 0.")
-    @Max(value = 23, message = "The hour must be less than or equal to 23.")
+    @Min(value = 0, message = "validation.task.hour.Min.message")
+    @Max(value = 23, message = "validation.task.hour.Max.message")
     @Column(name = "task_hour", nullable = false)
     private int hour;
 
-    @Min(value = 0, message = "The minute must be greater than or equal to 0.")
-    @Max(value = 59, message = "The minute must be less than or equal to 59.")
+    @Min(value = 0, message = "validation.task.minute.Min.message")
+    @Max(value = 59, message = "validation.task.minute.Max.message")
     @Column(name = "task_minute", nullable = false)
     private int minute;
 
-    @NotEmpty(message = "The execution days must not be empty.")
+    @NotEmpty(message = "validation.task.execution.days.NotEmpty.message")
     @Column(name = "execution_days", length = 30, nullable = false)
     private String executionDays;
 
-    @Future(message = "The execute until date must be in the future.")
+    @Future(message = "validation.task.execute.until.Future.message")
     @Column(name = "execute_until")
     private ZonedDateTime executeUntil;
 

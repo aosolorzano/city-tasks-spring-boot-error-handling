@@ -110,7 +110,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
                     Assertions.assertThat(device.getId()).isEqualTo(DEVICE_ID);
                     Assertions.assertThat(device.getName()).isEqualTo("Device 1");
                     Assertions.assertThat(device.getDescription()).isEqualTo("Device 1 Description");
-                    Assertions.assertThat(device.getStatus()).isEqualTo("ACTIVE");
+                    Assertions.assertThat(device.getStatus()).isEqualTo("OFF");
                 })
                 .verifyComplete();
     }
@@ -127,29 +127,6 @@ class DeviceRepositoryTest extends AbstractContainerBase {
 
     @Test
     @Order(4)
-    @DisplayName("Turn Device OFF")
-    void givenDeviceItem_whenTaskTurnedOff_mustUpdateDeviceStatus() {
-        Task task = getMockedTask();
-        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
-        Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTask(task);
-        StepVerifier.create(deviceUpdateResponse)
-                .expectNext(true)
-                .verifyComplete();
-
-        Mono<Device> deviceResponse = this.deviceRepository.findById(DEVICE_ID);
-        StepVerifier.create(deviceResponse)
-                .assertNext(device -> {
-                    Assertions.assertThat(device).isNotNull();
-                    Assertions.assertThat(device.getId()).isEqualTo(DEVICE_ID);
-                    Assertions.assertThat(device.getName()).isEqualTo("Device 1");
-                    Assertions.assertThat(device.getDescription()).isEqualTo("Device 1 Description");
-                    Assertions.assertThat(device.getStatus()).isEqualTo("OFF");
-                })
-                .verifyComplete();
-    }
-
-    @Test
-    @Order(5)
     @DisplayName("Turn Device ON")
     void givenDeviceItem_whenTaskTurnedOn_mustUpdateDeviceStatus() {
         Task task = getMockedTask();
@@ -172,6 +149,29 @@ class DeviceRepositoryTest extends AbstractContainerBase {
     }
 
     @Test
+    @Order(5)
+    @DisplayName("Turn Device OFF")
+    void givenDeviceItem_whenTaskTurnedOff_mustUpdateDeviceStatus() {
+        Task task = getMockedTask();
+        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
+        Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTask(task);
+        StepVerifier.create(deviceUpdateResponse)
+                .expectNext(true)
+                .verifyComplete();
+
+        Mono<Device> deviceResponse = this.deviceRepository.findById(DEVICE_ID);
+        StepVerifier.create(deviceResponse)
+                .assertNext(device -> {
+                    Assertions.assertThat(device).isNotNull();
+                    Assertions.assertThat(device.getId()).isEqualTo(DEVICE_ID);
+                    Assertions.assertThat(device.getName()).isEqualTo("Device 1");
+                    Assertions.assertThat(device.getDescription()).isEqualTo("Device 1 Description");
+                    Assertions.assertThat(device.getStatus()).isEqualTo("OFF");
+                })
+                .verifyComplete();
+    }
+
+    @Test
     @Order(6)
     @DisplayName("Update not existing Device ID")
     void givenDeviceItem_whenUpdate_mustThrowException() {
@@ -188,7 +188,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
                 .id(DEVICE_ID)
                 .name("Device 1")
                 .description("Device 1 Description")
-                .status("ACTIVE")
+                .status("OFF")
                 .build();
     }
 
