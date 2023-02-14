@@ -4,7 +4,7 @@ import com.hiperium.city.tasks.api.common.AbstractContainerBase;
 import com.hiperium.city.tasks.api.dto.ErrorDetailsDTO;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
-import com.hiperium.city.tasks.api.utils.enums.GenericErrorEnum;
+import com.hiperium.city.tasks.api.utils.enums.ValidationErrorEnum;
 import com.hiperium.city.tasks.api.utils.enums.LanguageCodeEnum;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @AutoConfigureWebTestClient
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TaskControllerValidationTest extends AbstractContainerBase {
+class TaskControllerValidationsTest extends AbstractContainerBase {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -46,7 +46,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setName(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Task name cannot be empty.");
                 });
     }
@@ -57,7 +57,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setName(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("El nombre de la tarea no puede estar vacío.");
                 });
     }
@@ -68,7 +68,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setHour(25);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Task hour must be less than or equal to 23.");
                 });
     }
@@ -79,7 +79,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setHour(25);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("La hora de la tarea debe ser menor o igual a 23.");
                 });
     }
@@ -90,7 +90,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setMinute(-20);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Task minute must be greater than or equal to 0.");
                 });
     }
@@ -101,7 +101,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setMinute(-20);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("El minuto de la tarea debe ser mayor o igual a 0.");
                 });
     }
@@ -112,7 +112,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setExecutionDays(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Task execution days cannot be empty.");
                 });
     }
@@ -123,7 +123,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setExecutionDays(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Los días de ejecución de la tarea no pueden estar vacíos.");
                 });
     }
@@ -134,7 +134,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         task.setExecuteUntil(ZonedDateTime.now().minusDays(1));
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Task execute until must be in the future.");
                 });
     }
@@ -145,7 +145,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         task.setExecuteUntil(ZonedDateTime.now().minusDays(1));
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("La fecha final de ejecución de la tarea debe ser posterior a la fecha actual.");
                 });
     }
@@ -156,7 +156,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setDeviceId(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Device ID cannot be empty.");
                 });
     }
@@ -167,7 +167,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setDeviceId(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("El ID del dispositivo no puede estar vacío.");
                 });
     }
@@ -178,7 +178,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setDeviceAction(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.EN)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("Device action cannot be empty.");
                 });
     }
@@ -189,7 +189,7 @@ class TaskControllerValidationTest extends AbstractContainerBase {
         this.task.setDeviceAction(null);
         this.getValidationErrorResponse(this.task, LanguageCodeEnum.ES)
                 .value(errorDetailsDTO -> {
-                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode());
+                    Assertions.assertThat(errorDetailsDTO.getErrorCode()).isEqualTo(ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode());
                     Assertions.assertThat(errorDetailsDTO.getErrorMessage()).isEqualTo("La acción del dispositivo no puede estar vacía.");
                 });
     }

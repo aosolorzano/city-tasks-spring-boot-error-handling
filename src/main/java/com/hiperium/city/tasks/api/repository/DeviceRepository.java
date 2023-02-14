@@ -22,8 +22,8 @@ public class DeviceRepository {
         this.dynamoDbAsyncClient = dynamoDbAsyncClient;
     }
 
-    public Mono<Boolean> updateStatusByTask(Task task) {
-        LOGGER.debug("updateStatusByTask(): {} - {}", task.getDeviceId(), task.getDeviceAction());
+    public Mono<Boolean> updateStatusByTaskOperation(Task task) {
+        LOGGER.debug("updateStatusByTaskOperation(): {} - {}", task.getDeviceId(), task.getDeviceAction());
         return this.findById(task.getDeviceId())
                 .map(deviceFound -> DevicesUtil.changeDeviceStatus(deviceFound, task))
                 .flatMap(deviceUpdated -> Mono.fromFuture(this.dynamoDbAsyncClient.putItem(DevicesUtil.putDeviceRequest(deviceUpdated))))

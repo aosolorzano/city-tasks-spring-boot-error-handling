@@ -5,7 +5,7 @@ import com.hiperium.city.tasks.api.exception.ResourceNotFoundException;
 import com.hiperium.city.tasks.api.model.Device;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.DevicesUtil;
-import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.DeviceOperationEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,8 +130,8 @@ class DeviceRepositoryTest extends AbstractContainerBase {
     @DisplayName("Turn Device ON")
     void givenDeviceItem_whenTaskTurnedOn_mustUpdateDeviceStatus() {
         Task task = getMockedTask();
-        task.setDeviceAction(DeviceActionEnum.ACTIVATE);
-        Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTask(task);
+        task.setDeviceAction(DeviceOperationEnum.ACTIVATE);
+        Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTaskOperation(task);
         StepVerifier.create(deviceUpdateResponse)
                 .expectNext(true)
                 .verifyComplete();
@@ -153,8 +153,8 @@ class DeviceRepositoryTest extends AbstractContainerBase {
     @DisplayName("Turn Device OFF")
     void givenDeviceItem_whenTaskTurnedOff_mustUpdateDeviceStatus() {
         Task task = getMockedTask();
-        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
-        Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTask(task);
+        task.setDeviceAction(DeviceOperationEnum.DEACTIVATE);
+        Mono<Boolean> deviceUpdateResponse = this.deviceRepository.updateStatusByTaskOperation(task);
         StepVerifier.create(deviceUpdateResponse)
                 .expectNext(true)
                 .verifyComplete();
@@ -177,7 +177,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
     void givenDeviceItem_whenUpdate_mustThrowException() {
         Task task = getMockedTask();
         task.setDeviceId("100");
-        Mono<Boolean> deviceMonoResponse = this.deviceRepository.updateStatusByTask(task);
+        Mono<Boolean> deviceMonoResponse = this.deviceRepository.updateStatusByTaskOperation(task);
         StepVerifier.create(deviceMonoResponse)
                 .expectErrorMatches(throwable -> throwable instanceof ResourceNotFoundException)
                 .verify();
@@ -197,7 +197,7 @@ class DeviceRepositoryTest extends AbstractContainerBase {
                 .name("Task 1")
                 .description("Task 1 Description")
                 .deviceId(DEVICE_ID)
-                .deviceAction(DeviceActionEnum.ACTIVATE)
+                .deviceAction(DeviceOperationEnum.ACTIVATE)
                 .build();
     }
 }

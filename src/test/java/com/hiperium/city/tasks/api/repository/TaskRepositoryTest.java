@@ -3,12 +3,10 @@ package com.hiperium.city.tasks.api.repository;
 import com.hiperium.city.tasks.api.common.AbstractContainerBase;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
-import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.DeviceOperationEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -44,7 +42,7 @@ class TaskRepositoryTest extends AbstractContainerBase {
                 .executionDays("MON,WED,SUN")
                 .executeUntil(ZonedDateTime.now().plusMonths(1))
                 .deviceId(DEVICE_ID)
-                .deviceAction(DeviceActionEnum.ACTIVATE)
+                .deviceAction(DeviceOperationEnum.ACTIVATE)
                 .deviceExecutionCommand("python /home/pi/hiperium/line_follower.py")
                 .createdAt(ZonedDateTime.now())
                 .updatedAt(ZonedDateTime.now())

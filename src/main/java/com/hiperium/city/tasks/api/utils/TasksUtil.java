@@ -1,7 +1,7 @@
 package com.hiperium.city.tasks.api.utils;
 
 import com.hiperium.city.tasks.api.model.Task;
-import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.DeviceOperationEnum;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -51,7 +51,7 @@ public final class TasksUtil {
                 .description("Task description")
                 .enabled(true)
                 .deviceId("123")
-                .deviceAction(DeviceActionEnum.ACTIVATE)
+                .deviceAction(DeviceOperationEnum.ACTIVATE)
                 .deviceExecutionCommand("python /home/pi/hiperium/line_follower.py")
                 .hour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
                 .minute(Calendar.getInstance().get(Calendar.MINUTE))

@@ -1,18 +1,11 @@
 package com.hiperium.city.tasks.api.exception;
 
-import com.hiperium.city.tasks.api.utils.enums.GenericErrorEnum;
+import com.hiperium.city.tasks.api.utils.enums.SchedulerErrorEnum;
 import org.quartz.SchedulerException;
 
-public class QuartzException extends RuntimeException {
+public class QuartzException extends HiperiumException {
 
-    private final String errorCode;
-
-    public QuartzException(SchedulerException e) {
-        super(GenericErrorEnum.SCHEDULER_ERROR.getMessage(), e);
-        this.errorCode = GenericErrorEnum.SCHEDULER_ERROR.getCode();
-    }
-
-    public String getErrorCode() {
-        return errorCode;
+    public QuartzException(SchedulerException e, SchedulerErrorEnum errorEnum, Object... args) {
+        super(e, errorEnum.getCode(), errorEnum.getMessage(), args);
     }
 }

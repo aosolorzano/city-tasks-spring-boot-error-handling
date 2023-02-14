@@ -1,10 +1,8 @@
 package com.hiperium.city.tasks.api.job;
 
-import com.hiperium.city.tasks.api.exception.TaskException;
 import com.hiperium.city.tasks.api.repository.DeviceRepository;
 import com.hiperium.city.tasks.api.repository.TaskRepository;
 import com.hiperium.city.tasks.api.utils.JobsUtil;
-import com.hiperium.city.tasks.api.utils.enums.TaskErrorEnum;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
@@ -31,17 +29,11 @@ public class TaskJob implements Job {
         final String jobId = context.getJobDetail().getJobDataMap().getString(JobsUtil.TASK_JOB_ID_DATA_KEY);
         Mono.just(jobId)
                 .map(this.taskRepository::findByJobId)
-                .flatMap(this.deviceRepository::updateStatusByTask)
-                .map(this::validateDeviceUpdate)
+                .flatMap(this.deviceRepository::updateStatusByTaskOperation)
                 .subscribe(
                         result -> LOGGER.debug("execute() - Job executed successfully: {}", jobId),
                         error -> LOGGER.error("execute() - Error: {}", error.getMessage())
                 );
-    }
-
-    private Mono<Void> validateDeviceUpdate(boolean result) {
-        if (result) return Mono.empty();
-        else return Mono.error(new TaskException(TaskErrorEnum.DEVICE_STATUS_NOT_UPDATED));
     }
 }
 

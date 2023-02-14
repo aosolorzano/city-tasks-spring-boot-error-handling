@@ -3,7 +3,7 @@ package com.hiperium.city.tasks.api.controller;
 import com.hiperium.city.tasks.api.common.AbstractContainerBase;
 import com.hiperium.city.tasks.api.model.Task;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
-import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.DeviceOperationEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.BeanUtils;
@@ -87,19 +87,6 @@ class TaskControllerTest extends AbstractContainerBase {
 
     @Test
     @Order(3)
-    @DisplayName("Find Tasks that does not exist")
-    void givenNotExistingTasksId_whenFindTaskById_thenReturnError404() {
-        this.webTestClient
-                .get()
-                .uri(TasksUtil.TASKS_PATH.concat("/{id}"), 100L)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isNotFound();
-    }
-
-
-    @Test
-    @Order(4)
     @DisplayName("Find all Tasks")
     void givenTasksList_whenFindAllTasks_thenReturnTasksList() {
         this.webTestClient
@@ -116,7 +103,7 @@ class TaskControllerTest extends AbstractContainerBase {
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     @DisplayName("Update Task")
     void givenModifiedTask_whenUpdateTask_thenReturnUpdatedTask() {
         task.setName("Test class updated");
@@ -124,7 +111,7 @@ class TaskControllerTest extends AbstractContainerBase {
         task.setHour(13);
         task.setMinute(30);
         task.setExecutionDays("MON,TUE,WED,THU,FRI,SAT,SUN");
-        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
+        task.setDeviceAction(DeviceOperationEnum.DEACTIVATE);
 
         this.webTestClient
                 .put()
@@ -146,20 +133,7 @@ class TaskControllerTest extends AbstractContainerBase {
     }
 
     @Test
-    @Order(6)
-    @DisplayName("Update Tasks that does not exist")
-    void givenNotExistingTasksId_whenUpdateTask_thenReturnError404() {
-        this.webTestClient
-                .put()
-                .uri(TasksUtil.TASKS_PATH.concat("/{id}"), 100L)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(task)
-                .exchange()
-                .expectStatus().isNotFound();
-    }
-
-    @Test
-    @Order(7)
+    @Order(5)
     @DisplayName("Delete Task")
     void givenTaskId_whenDeleteTask_thenReturnResponse200() {
         this.webTestClient
@@ -167,16 +141,5 @@ class TaskControllerTest extends AbstractContainerBase {
                 .uri(TasksUtil.TASKS_PATH.concat("/{id}"), task.getId())
                 .exchange()
                 .expectStatus().is2xxSuccessful();
-    }
-
-    @Test
-    @Order(8)
-    @DisplayName("Delete not existing Task")
-    void givenTaskId_whenDeleteTaskById_thenReturnError404() {
-        this.webTestClient
-                .delete()
-                .uri(TasksUtil.TASKS_PATH.concat("/{id}"), task.getId())
-                .exchange()
-                .expectStatus().isNotFound();
     }
 }

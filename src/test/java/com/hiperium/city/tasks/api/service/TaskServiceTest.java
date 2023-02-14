@@ -3,7 +3,7 @@ package com.hiperium.city.tasks.api.service;
 import com.hiperium.city.tasks.api.common.AbstractContainerBase;
 import com.hiperium.city.tasks.api.exception.ResourceNotFoundException;
 import com.hiperium.city.tasks.api.model.Task;
-import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.DeviceOperationEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.BeanUtils;
@@ -42,7 +42,7 @@ class TaskServiceTest extends AbstractContainerBase {
                 .executionDays("MON,WED,SUN")
                 .executeUntil(ZonedDateTime.now().plusMonths(1))
                 .deviceId(DEVICE_ID)
-                .deviceAction(DeviceActionEnum.ACTIVATE)
+                .deviceAction(DeviceOperationEnum.ACTIVATE)
                 .deviceExecutionCommand("python /home/pi/hiperium/ultrasonic_avoidance.py")
                 .build();
     }
@@ -63,7 +63,7 @@ class TaskServiceTest extends AbstractContainerBase {
                     Assertions.assertThat(savedTask.getExecutionDays()).isEqualTo("MON,WED,SUN");
                     Assertions.assertThat(savedTask.getDeviceExecutionCommand()).isEqualTo("python /home/pi/hiperium/ultrasonic_avoidance.py");
                     Assertions.assertThat(savedTask.getDeviceId()).isEqualTo(DEVICE_ID);
-                    Assertions.assertThat(savedTask.getDeviceAction()).isEqualTo(DeviceActionEnum.ACTIVATE);
+                    Assertions.assertThat(savedTask.getDeviceAction()).isEqualTo(DeviceOperationEnum.ACTIVATE);
                     BeanUtils.copyProperties(savedTask, task);
                 })
                 .verifyComplete();
@@ -112,7 +112,7 @@ class TaskServiceTest extends AbstractContainerBase {
         task.setHour(13);
         task.setMinute(30);
         task.setExecutionDays("TUE,THU,SAT");
-        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
+        task.setDeviceAction(DeviceOperationEnum.DEACTIVATE);
         Mono<Task> taskMonoResult = this.taskService.update(task.getId(), task);
         StepVerifier.create(taskMonoResult)
                 .assertNext(updatedTask -> {
@@ -122,7 +122,7 @@ class TaskServiceTest extends AbstractContainerBase {
                     Assertions.assertThat(updatedTask.getHour()).isEqualTo(13);
                     Assertions.assertThat(updatedTask.getMinute()).isEqualTo(30);
                     Assertions.assertThat(updatedTask.getExecutionDays()).isEqualTo("TUE,THU,SAT");
-                    Assertions.assertThat(updatedTask.getDeviceAction()).isEqualTo(DeviceActionEnum.DEACTIVATE);
+                    Assertions.assertThat(updatedTask.getDeviceAction()).isEqualTo(DeviceOperationEnum.DEACTIVATE);
                 })
                 .verifyComplete();
     }
@@ -136,7 +136,7 @@ class TaskServiceTest extends AbstractContainerBase {
         task.setHour(13);
         task.setMinute(30);
         task.setExecutionDays("TUE,THU,SAT");
-        task.setDeviceAction(DeviceActionEnum.DEACTIVATE);
+        task.setDeviceAction(DeviceOperationEnum.DEACTIVATE);
         Mono<Task> taskMonoResult = this.taskService.update(100L, task);
         StepVerifier.create(taskMonoResult)
                 .expectError(ResourceNotFoundException.class)

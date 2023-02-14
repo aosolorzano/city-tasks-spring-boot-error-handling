@@ -7,6 +7,7 @@ import com.hiperium.city.tasks.api.repository.TaskRepository;
 import com.hiperium.city.tasks.api.utils.JobsUtil;
 import com.hiperium.city.tasks.api.utils.TasksUtil;
 import com.hiperium.city.tasks.api.utils.enums.ResourceErrorEnum;
+import com.hiperium.city.tasks.api.utils.enums.SchedulerErrorEnum;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
@@ -64,14 +65,14 @@ public class TaskService {
                 .map(this.taskRepository::save);
     }
 
-    public Mono<Void> delete(Long taskId) {
+    public Mono<Void> delete(final Long taskId) {
         return this.findById(taskId)
                 .doOnNext(this::unscheduleJob)
                 .doOnNext(this.taskRepository::delete)
                 .then();
     }
 
-    private void scheduleJob(Task task) {
+    private void scheduleJob(final Task task) {
         LOGGER.debug("scheduleJob() - BEGIN: {}", task.getName());
         task.setJobId(TasksUtil.generateJobId());
         JobDetail job = JobsUtil.createJobDetailFromTask(task);
@@ -79,7 +80,7 @@ public class TaskService {
         try {
             this.quartzScheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
-            throw new QuartzException(e);
+            throw new QuartzException(e, SchedulerErrorEnum.SCHEDULE_JOB_ERROR, task.getName());
         }
         LOGGER.debug("scheduleJob() - END");
     }
@@ -91,7 +92,7 @@ public class TaskService {
         try {
             this.quartzScheduler.rescheduleJob(currentTrigger.getKey(), newTrigger);
         } catch (SchedulerException e) {
-            throw new QuartzException(e);
+            throw new QuartzException(e, SchedulerErrorEnum.RESCHEDULE_JOB_ERROR, task.getId());
         }
         LOGGER.debug("rescheduleJob() - END");
     }
@@ -102,7 +103,7 @@ public class TaskService {
         try {
             this.quartzScheduler.unscheduleJob(currentTrigger.getKey());
         } catch (SchedulerException e) {
-            throw new QuartzException(e);
+            throw new QuartzException(e, SchedulerErrorEnum.UNSCHEDULE_JOB_ERROR, task.getId());
         }
         LOGGER.debug("unscheduleJob() - END");
     }
@@ -118,7 +119,7 @@ public class TaskService {
                 }
             }
         } catch (SchedulerException e) {
-            throw new QuartzException(e);
+            throw new QuartzException(e, SchedulerErrorEnum.GET_CURRENT_TRIGGER_ERROR, task.getId());
         }
         if (Objects.isNull(trigger)) {
             throw new ResourceNotFoundException(ResourceErrorEnum.TRIGGER_NOT_FOUND, task.getId());

@@ -2,7 +2,7 @@ package com.hiperium.city.tasks.api.exception;
 
 import com.hiperium.city.tasks.api.dto.ErrorDetailsDTO;
 import com.hiperium.city.tasks.api.utils.ErrorUtil;
-import com.hiperium.city.tasks.api.utils.enums.GenericErrorEnum;
+import com.hiperium.city.tasks.api.utils.enums.ValidationErrorEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
@@ -29,64 +29,56 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private String zoneId;
 
     public GlobalExceptionHandler(MessageSource messageSource) {
-        super();
         this.messageSource = messageSource;
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final Mono<ResponseEntity<ErrorDetailsDTO>> handleResourceNotFoundException(Exception exception,
-                                                                                       ServerWebExchange exchange) {
-        ErrorDetailsDTO errorDetails = ErrorUtil.getErrorDetailsVO(exchange, exception.getMessage(),
-                ((ResourceNotFoundException) exception).getErrorCode(),
-                this.zoneId);
+    public final Mono<ResponseEntity<ErrorDetailsDTO>> handleResourceNotFoundException(
+            ResourceNotFoundException exception,
+            ServerWebExchange exchange) {
+        ErrorDetailsDTO errorDetails = this.constructErrorDetailsDTO(exchange, exception);
         super.logger.error("handleResourceNotFoundException(): " + errorDetails);
         return Mono.just(new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND));
     }
 
-    @ExceptionHandler(TaskException.class)
-    public final Mono<ResponseEntity<ErrorDetailsDTO>> handleTaskException(Exception exception,
-                                                                           ServerWebExchange exchange) {
-        ErrorDetailsDTO errorDetails = ErrorUtil.getErrorDetailsVO(exchange, exception.getMessage(),
-                ((TaskException) exception).getErrorCode(),
-                this.zoneId);
-        super.logger.error("handleTaskException(): " + errorDetails);
-        return Mono.just(new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST));
-    }
-
     @ExceptionHandler(QuartzException.class)
-    public final Mono<ResponseEntity<ErrorDetailsDTO>> handleQuartzException(Exception exception,
-                                                                             ServerWebExchange exchange) {
-        ErrorDetailsDTO errorDetails = ErrorUtil.getErrorDetailsVO(exchange, exception.getMessage(),
-                ((QuartzException) exception).getErrorCode(),
-                this.zoneId);
+    public final Mono<ResponseEntity<ErrorDetailsDTO>> handleQuartzException(
+            QuartzException exception,
+            ServerWebExchange exchange) {
+        ErrorDetailsDTO errorDetails = this.constructErrorDetailsDTO(exchange, exception);
         super.logger.error("handleQuartzException(): " + errorDetails);
         return Mono.just(new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     @Override
-    public Mono<ResponseEntity<Object>> handleWebExchangeBindException(WebExchangeBindException exception,
-                                                                          HttpHeaders headers,
-                                                                          HttpStatusCode status,
-                                                                          ServerWebExchange exchange) {
-        String errorMessage = this.loadI18nMessage(exception, exchange);
+    public Mono<ResponseEntity<Object>> handleWebExchangeBindException(
+            WebExchangeBindException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            ServerWebExchange exchange) {
+        String errorMessage = null;
+        FieldError fieldError = exception.getFieldError();
+        if (Objects.nonNull(fieldError)) {
+            String messageKey = fieldError.getDefaultMessage();
+            errorMessage = this.getMessageFromProperties(messageKey, ErrorUtil.getLocale(exchange));
+        }
+        if (Objects.isNull(errorMessage)) {
+            errorMessage = exception.getMessage();
+        }
         ErrorDetailsDTO errorDetails = ErrorUtil.getErrorDetailsVO(exchange, errorMessage,
-                GenericErrorEnum.FIELD_VALIDATION_ERROR.getCode(), this.zoneId);
+                ValidationErrorEnum.FIELD_VALIDATION_ERROR.getCode(), this.zoneId);
         super.logger.error("handleWebExchangeBindException(): " + errorDetails);
         return Mono.just(new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST));
     }
 
-    private String loadI18nMessage(WebExchangeBindException exception, ServerWebExchange exchange) {
-        super.logger.debug("loadI18nMessage() - START");
-        FieldError fieldError = exception.getFieldError();
-        if (Objects.nonNull(fieldError)) {
-            String messageKey = fieldError.getDefaultMessage();
-            super.logger.debug("loadI18nMessage() - Message key found: " + messageKey);
-            if (Objects.nonNull(messageKey)) {
-                Locale locale = exchange.getRequest().getHeaders().getAcceptLanguageAsLocales().get(0);
-                super.logger.debug("loadI18nMessage() - Locale found: " + locale);
-                return this.messageSource.getMessage(messageKey, null, locale);
-            }
-        }
-        return exception.getMessage();
+    private ErrorDetailsDTO constructErrorDetailsDTO(ServerWebExchange exchange, HiperiumException exception) {
+        String errorMessage = this.getMessageFromProperties(exception.getErrorMessageKey(),
+                ErrorUtil.getLocale(exchange), exception.getArgs());
+        return ErrorUtil.getErrorDetailsVO(exchange, errorMessage, exception.getErrorCode(), this.zoneId);
+    }
+
+    private String getMessageFromProperties(String messageKey, Locale locale, Object... args) {
+        super.logger.debug("getMessageFromProperties() - Key: " + messageKey + " - Locale: " + locale);
+        return this.messageSource.getMessage(messageKey, args, locale);
     }
 }

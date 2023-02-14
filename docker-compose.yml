@@ -55,11 +55,11 @@ services:
       - tasks-network
 
   tasks-api:
-    image: aosolorzano/city-tasks-spring-native:1.2.0
-    container_name: city-tasks-spring-native
+    image: aosolorzano/city-tasks-spring-boot-error-handling:1.3.0
+    container_name: city-tasks-spring-boot-error-handling
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-native
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - HIPERIUM_CITY_TASKS_TIME_ZONE_ID=-05:00

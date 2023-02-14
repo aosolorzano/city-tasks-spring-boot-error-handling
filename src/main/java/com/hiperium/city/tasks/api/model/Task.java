@@ -1,6 +1,6 @@
 package com.hiperium.city.tasks.api.model;
 
-import com.hiperium.city.tasks.api.utils.enums.DeviceActionEnum;
+import com.hiperium.city.tasks.api.utils.enums.DeviceOperationEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -44,7 +44,7 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @NotNull(message = "validation.device.action.NotEmpty.message")
     @Column(name = "device_action", length = 10, nullable = false)
-    private DeviceActionEnum deviceAction;
+    private DeviceOperationEnum deviceAction;
 
     @Column(name = "device_execution_command", length = 90)
     private String deviceExecutionCommand;
