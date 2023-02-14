@@ -1,5 +1,5 @@
 
-## Spring Native with WebFlux, Quartz, TDD, and Testcontainers.
+## Error Handing on Spring Native app with WebFlux and i18n.
 
 * **Author**: [Andres Solorzano](https://www.linkedin.com/in/aosolorzano/).
 * **Level**: Advanced.
@@ -8,9 +8,9 @@
 ---
 
 ## Description
-This project uses the Spring Boot Framework to perform CRUD operations over Tasks records that store Quartz Jobs on a Postgres database.
-The idea is to use Reactive Programing with the help of the Spring WebFlux library, and a TDD methodology from the beginning with the support of Testcontainers to execute the Integration Tests.
-Also, the project uses Spring Native to compile the application into a native executable that runs on a Docker container alongside the other services in a Docker cluster.
+This project uses the Spring Boot Framework to handle errors in a Spring Native application that uses WebFlux and i18n.
+The idea is to use a TDD methodology from the beginning with the support of Testcontainers to execute the Integration Tests.
+This project also uses Docker with the compose plugin to deploy a local cluster alongside the other required services by the Spring Boot microservice.
 
 ## GraalVM Native Support
 This project has been configured to let you generate either a lightweight container or a native executable.

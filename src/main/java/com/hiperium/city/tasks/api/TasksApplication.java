@@ -2,8 +2,10 @@ package com.hiperium.city.tasks.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hiperium.city.tasks.api.config.PropertiesLoader;
+import com.hiperium.city.tasks.api.config.hints.MessagesRuntimeHints;
 import com.hiperium.city.tasks.api.config.hints.PostgresRuntimeHints;
 import com.hiperium.city.tasks.api.config.hints.QuartzRuntimeHints;
+import com.hiperium.city.tasks.api.dto.ErrorDetailsDTO;
 import com.hiperium.city.tasks.api.job.TaskJob;
 import com.hiperium.city.tasks.api.vo.AuroraPostgresSecretVO;
 import org.slf4j.Logger;
@@ -19,8 +21,8 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import java.nio.charset.StandardCharsets;
 
 @SpringBootApplication
-@ImportRuntimeHints({PostgresRuntimeHints.class, QuartzRuntimeHints.class})
-@RegisterReflectionForBinding({AuroraPostgresSecretVO.class, TaskJob.class})
+@ImportRuntimeHints({PostgresRuntimeHints.class, QuartzRuntimeHints.class, MessagesRuntimeHints.class})
+@RegisterReflectionForBinding({AuroraPostgresSecretVO.class, TaskJob.class, ErrorDetailsDTO.class})
 public class TasksApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TasksApplication.class);
